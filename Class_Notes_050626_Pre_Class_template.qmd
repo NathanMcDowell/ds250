@@ -1,0 +1,136 @@
+---
+title: "Class Notes template 050626"
+format: html
+---
+
+Load libraries and load in data
+
+```{python}
+import numpy as np
+import polars as pl
+from lets_plot import *
+LetsPlot.setup_html(isolated_frame=True)
+
+# Include and execute your code here
+df = pl.read_csv("https://posit.byui.edu/content/0d43d66f-d3b7-4c43-8c36-52e3ed69e7f1/names_year_csv.csv")
+
+```
+
+```{python}
+df.head()
+```
+
+REVIEW EXERCISE:
+
+Can you get a dataset that includes 3-4 names (Use the names from people in your group, or another name is some are not common)?
+
+
+```{python}
+
+```
+
+```{python}
+
+```
+
+```{python}
+
+```
+Can you create a line plot of those names? 
+
+```{python}
+
+```
+
+
+
+```{python}
+
+```
+
+Create a new df with only the states where you each were born
+
+```{python}
+
+```
+
+Now graph that
+
+```{python}
+
+```
+
+What happened?
+
+
+Create a Totals column
+
+```{python}
+
+```
+
+Create a plot of the names now:
+
+```{python}
+
+```
+
+Give your plot a name so we can call it easily.
+
+```{python}
+
+```
+
+```{python}
+
+```
+
+
+Try using themes with your plot.
+
+```{python}
+
+```
+
+
+What about proportions?
+
+```{python}
+
+```
+
+How would you graph those proportions?
+
+```{python}
+
+```
+
+# Custom Themes
+## When creating plots, the order of the layers matters
+"Paint the wall → draw the data → add arrows → add labels"
+
+Background(rectangles, shading), Reference (vline, hline), Data (geom_line, geom_point), Highlights(thicker lines, special points), Annotation connectors (arrows), Annotation Text
+
+```{python}
+
+```
+
+
+
+Let's make a "great" plot
+
+```{python}
+
+```
+
+# Putting it all together 
+
+
+```{python}
+
+```
+
+
+
+What needs to be changed here?
+

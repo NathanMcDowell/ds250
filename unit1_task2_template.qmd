@@ -1,0 +1,162 @@
+---
+title: "Client Report - What's in a Name?"
+subtitle: "Unit 1 Task 2"
+author: "Nathan McDowell"
+format:
+  html:
+    self-contained: true
+    page-layout: full
+    title-block-banner: true
+    toc: true
+    toc-depth: 3
+    toc-location: body
+    number-sections: false
+    html-math-method: katex
+    code-fold: true
+    code-summary: "Show the code"
+    code-overflow: wrap
+    code-copy: hover
+    code-tools:
+        source: false
+        toggle: true
+        caption: See code
+execute: 
+  warning: false
+    
+---
+
+```{python}
+import polars as pl
+import numpy as np
+from lets_plot import *
+
+LetsPlot.setup_html(isolated_frame=True)
+```
+
+```{python}
+# Learn morea about Code Cells: https://quarto.org/docs/reference/cells/cells-jupyter.html
+
+# Include and execute your code here
+df = pl.read_csv("https://posit.byui.edu/content/0d43d66f-d3b7-4c43-8c36-52e3ed69e7f1/names_year_csv.csv")
+```
+
+## QUESTION 1
+
+<!-- Make sure at least one of your charts includes reference marks!! -->
+
+__How does your name at your birth year compare to its use historically? Your must provide a chart. The years labels on your charts should not include a comma.__ 
+
+I was named "Nathanael" at the height of the popularity of the name.
+
+```{python}
+# Q1
+import matplotlib.pyplot as plt
+
+my_name = "Nathanael"
+my_birth_year = 2004
+
+name_df = (
+    df.filter(pl.col("name") == my_name)
+      .select(["year", "Total"])
+      .sort("year")
+)
+
+birth_year_total = name_df.filter(pl.col("year") == my_birth_year)["Total"][0]
+
+
+
+years = name_df["year"].to_list()
+totals = name_df["Total"].to_list()
+
+plt.figure(figsize=(12, 5))
+plt.plot(years, totals)
+plt.axvline(x=my_birth_year, color="red", linestyle="--")
+plt.scatter([my_birth_year], [birth_year_total], color="red", zorder=5)
+
+plt.title(f'Historical usage of the name "{my_name}"')
+plt.xlabel("Year")
+plt.ylabel("Total babies")
+plt.xticks(years[::5], [str(y) for y in years[::5]], rotation=45)
+plt.legend()
+plt.tight_layout()
+plt.show()
+
+```
+
+
+## QUESTION 2
+
+__Think of a unique name from a famous movie. Plot the usage of that name and see how changes line up with the movie release. Does it look like the movie had an effect on usage?__  
+
+Yes. There is a noticable spike at 2005, the year that Revenge of the Sith was released. Interestingly, there was a large drop in 2019, the year Rise of Skywalker released.
+
+```{python}
+# Q2
+import matplotlib.pyplot as plt
+
+name = "Anakin"
+movie_year = 2005
+
+name_df = (
+    df.filter(pl.col("name") == name)
+      .select(["year", "Total"])
+      .sort("year")
+)
+
+years = name_df["year"].to_list()
+totals = name_df["Total"].to_list()
+
+plt.figure(figsize=(12, 5))
+plt.plot(years, totals)
+plt.axvline(x=movie_year, color="red", linestyle="--")
+
+plt.title('Historical usage of the name "Anakin"')
+plt.xlabel("Year")
+plt.ylabel("Total babies")
+plt.xticks(years, [str(y) for y in years], rotation=45)
+plt.legend()
+plt.tight_layout()
+plt.show()
+
+```
+
+## QUESTION 3
+
+__Mary, Martha, Peter, and Paul are all Christian names. From 1920 - 2000, compare the name usage of each of the four names in a single chart. What trends do you notice?__  
+
+All of those names have dropped in popularity over the last 70 years.
+
+```{python}
+# Q3
+import matplotlib.pyplot as plt
+
+names = ["Mary", "Martha", "Peter", "Paul"]
+
+name_df = (
+    df.filter(pl.col("name").is_in(names))
+      .filter((pl.col("year") >= 1920) & (pl.col("year") <= 2000))
+      .select(["name", "year", "Total"])
+      .sort("year")
+)
+
+plt.figure(figsize=(12, 5))
+
+for name in names:
+    filtered = name_df.filter(pl.col("name") == name)
+    years = filtered["year"].to_list()
+    totals = filtered["Total"].to_list()
+    plt.plot(years, totals, label=name)
+
+plt.title("Christian Name Usage (1920-2000)")
+plt.xlabel("Year")
+plt.ylabel("Total babies")
+
+all_years = name_df["year"].unique().sort().to_list()
+plt.xticks(all_years[::5], [str(y) for y in all_years[::5]], rotation=45)
+
+plt.legend()
+plt.tight_layout()
+plt.show()
+
+```
+<!-- Make sure at least one of your charts includes reference marks!! -->
