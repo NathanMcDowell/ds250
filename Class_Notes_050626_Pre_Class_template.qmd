@@ -26,14 +26,18 @@ Can you get a dataset that includes 3-4 names (Use the names from people in your
 
 
 ```{python}
-
+name_df = df.filter(pl.col("name").is_in(["Nathan", "Will", "Kosei", "Levi"])).select("name", "Total").sort("Total", descending = True)
+name_df.head(30)
 ```
 
 ```{python}
-
+name_df.select(pl.col("name").unique())
 ```
 
 ```{python}
+(
+    ggplot(data = name_df, mapping = aes(x = 'year', y = 'Total'))
+)
 
 ```
 Can you create a line plot of those names? 

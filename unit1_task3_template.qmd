@@ -1,0 +1,105 @@
+---
+title: "Client Report - Famous Names"
+subtitle: "Unit 1 Task 3"
+author: "Nathan McDowell"
+format:
+  html:
+    self-contained: true
+    page-layout: full
+    title-block-banner: true
+    toc: true
+    toc-depth: 3
+    toc-location: body
+    number-sections: false
+    html-math-method: katex
+    code-fold: true
+    code-summary: "Show the code"
+    code-overflow: wrap
+    code-copy: hover
+    code-tools:
+        source: false
+        toggle: true
+        caption: See code
+execute: 
+  warning: false
+    
+---
+
+```{python}
+import polars as pl
+import numpy as np
+from lets_plot import *
+
+LetsPlot.setup_html(isolated_frame=True)
+```
+
+```{python}
+# Learn morea about Code Cells: https://quarto.org/docs/reference/cells/cells-jupyter.html
+
+# Include and execute your code here
+df = pl.read_csv("https://posit.byui.edu/content/0d43d66f-d3b7-4c43-8c36-52e3ed69e7f1/names_year_csv.csv")
+```
+
+
+
+## QUESTION 1
+
+<!-- Make sure at least one of your charts includes reference marks!! -->
+
+__Make a new column that represents the total number of babies with your name for only those states in which you have lived. (If you have only ever lived in one state, pick at least one other state so you get practice summing across columns). Make a graph displaying that total for your name over time.__
+
+
+```{python}
+# Q1
+df.filter(pl.col('name') == 'Nathan').select('name','year', 'WA', 'SC').with_columns((pl.col('WA') + pl.col('SC')).alias('sum')).sort('sum', descending=True)
+
+```
+
+
+## QUESTION 2
+
+1. __Let's look at a name that is special for members of the church: Brigham. For each year, calculate what proportion of babies named Brigham were born in Idaho and Utah? Make a graph displaying the proportion over time.__  
+
+
+```{python}
+# Q2
+from lets_plot import *
+LetsPlot.setup_html()
+
+brigham_df = (
+    df.filter(pl.col("name") == "Brigham")
+      .with_columns(
+          ((pl.col("ID") + pl.col("UT")) / pl.col("Total")).alias("proportion")
+      )
+      .select(["year", "proportion"])
+      .sort("year")
+)
+
+(
+    ggplot(brigham_df, aes(x="year", y="proportion"))
+    + geom_line()
+    + labs(
+        title="Proportion of Babies Named Brigham Born in Idaho & Utah",
+        x="Year",
+        y="Proportion"
+    )
+    + theme(axis_text_x=element_text(angle=45))
+)
+
+```
+
+<!-- Make sure at least one of your charts includes reference marks!! -->
+
+## QUESTION 3
+
+1. __Consider doing some data validation. For the name David, calculate a sum of all 50 states and District of Columbia for each year. Now compare that total to the value in the 'Total' column. In which years, if any, do they not agree?__
+
+All years agree.
+
+```{python}
+# Q3
+state_cols = [col for col in df.columns if col not in ["name", "year", "Total"]]
+david_df = df.filter(pl.col('name') == 'David').with_columns(pl.sum_horizontal(state_cols).alias('new_total')).select('name', 'year','Total', 'new_total')
+david_df.filter(pl.col('Total') != pl.col('new_total'))
+
+```
